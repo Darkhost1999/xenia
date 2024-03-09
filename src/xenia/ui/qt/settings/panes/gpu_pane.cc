@@ -8,7 +8,7 @@ void GPUPane::Build() {
   QWidget* widget = new QWidget();
   widget->setStyleSheet("background: orange");
 
-  set_widget(widget);
+  SetContentWidget(widget);
 }
 
 }  // namespace qt

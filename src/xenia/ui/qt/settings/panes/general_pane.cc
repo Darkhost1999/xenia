@@ -27,7 +27,6 @@ void GeneralPane::Build() {
 
   // Setup scroll area for settings pane
   XScrollArea* scroll_area = new XScrollArea(this);
-  scroll_area->setFocusProxy(base_widget);
   scroll_area->setWidget(base_widget);
   scroll_area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   scroll_area->setWidgetResizable(true);
@@ -40,12 +39,14 @@ void GeneralPane::Build() {
 
   auto settings_factory = SettingsWidgetFactory();
   auto settings_widget = settings_factory.BuildSettingsWidget("General");
+  scroll_area->setFocusProxy(settings_widget);
+
 
   layout->addWidget(settings_widget);
 
   layout->addStretch();
 
-  set_widget(scroll_area);
+  SetContentWidget(scroll_area);
 }
 
 }  // namespace qt

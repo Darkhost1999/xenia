@@ -8,7 +8,7 @@ void InterfacePane::Build() {
   QWidget* widget = new QWidget();
   widget->setStyleSheet("background: brown");
 
-  set_widget(widget);
+  SetContentWidget(widget);
 }
 
 }  // namespace qt

@@ -8,7 +8,7 @@ void AdvancedPane::Build() {
   QWidget* widget = new QWidget();
   widget->setStyleSheet("background: green");
 
-  set_widget(widget);
+  SetContentWidget(widget);
 }
 
 }  // namespace qt

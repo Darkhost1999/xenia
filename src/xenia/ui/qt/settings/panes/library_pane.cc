@@ -8,7 +8,7 @@ void LibraryPane::Build() {
   QWidget* widget = new QWidget();
   widget->setStyleSheet("background: lime");
 
-  set_widget(widget);
+  SetContentWidget(widget);
 }
 
 }  // namespace qt

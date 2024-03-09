@@ -8,7 +8,7 @@ void ControlsPane::Build() {
   QWidget* widget = new QWidget();
   widget->setStyleSheet("background: yellow");
 
-  set_widget(widget);
+  SetContentWidget(widget);
 }
 
 }  // namespace qt

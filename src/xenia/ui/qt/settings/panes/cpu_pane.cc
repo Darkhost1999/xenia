@@ -8,7 +8,7 @@ void CPUPane::Build() {
   QWidget* widget = new QWidget();
   widget->setStyleSheet("background: gray");
 
-  set_widget(widget);
+  SetContentWidget(widget);
 }
 
 }  // namespace qt

@@ -39,7 +39,7 @@ class SettingsPane : public Themeable<QWidget> {
   operator SidebarItem() const { return SidebarItem{glyph_, title_, widget_}; }
 
  protected:
-  void set_widget(QWidget* widget) { widget_ = widget; }
+  void SetContentWidget(QWidget* widget);
 
  private:
   QChar glyph_;
