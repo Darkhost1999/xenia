@@ -16,6 +16,9 @@
 #include <QGraphicsEffect>
 #include <QStackedWidget>
 
+#include "xenia/base/logging.h"
+#include "xenia/ui/qt/events/hid_event.h"
+#include "xenia/ui/qt/helpers/focus_helper.h"
 #include "xenia/ui/qt/widgets/separator.h"
 
 namespace xe {
@@ -126,6 +129,53 @@ void SplitTab::Build() {
 void SplitTab::AddSidebarItem(const SidebarItem& item) {
   sidebar_items_.push_back(item);
   // TODO: recreate sidebar and content here?
+}
+
+const SidebarItem* SplitTab::GetActiveSidebarItem() const {
+  int index = sidebar_->currentSelection();
+  if (index > -1 && index < sidebar_items_.size()) {
+    return &sidebar_items_.at(index);
+  }
+
+  return nullptr;
+}
+
+bool SplitTab::event(QEvent* event) {
+  if (event->type() == HidEvent::ButtonPressType) {
+    auto button_press_event = static_cast<ButtonPressEvent*>(event);
+    // skip repeat presses
+    if (button_press_event->is_repeat()) {
+      return false;
+    }
+
+    QWidget* focused_widget = QApplication::focusWidget();
+
+    // Check to see if a sidebar button is focused.
+    // We only care about handling Dpad right events if one is.
+    if (focused_widget) {
+      const auto& buttons = button_press_event->buttons();
+
+      if (buttons & kInputDpadRight) {
+        for (const auto& btn : sidebar_->buttonGroup()->buttons()) {
+          if (focused_widget == btn) {
+            QWidget* stack_content = content_widget_->currentWidget();
+            if (stack_content) {
+              FocusHelper::FocusNextInteractable(stack_content);
+            }
+
+            event->accept();
+            return true;
+          }
+        }
+      } else if (buttons & kInputDpadLeft) {
+        if (content_widget_->isAncestorOf(focused_widget)) {
+          sidebar_->setFocus();
+        }
+      }
+    }
+  }
+
+  return XTab::event(event);
 }
 
 }  // namespace qt

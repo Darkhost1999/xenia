@@ -6,6 +6,7 @@
 
 #include "build/version.h"
 #include "events/hid_event.h"
+#include "helpers/focus_helper.h"
 #include "xenia/base/logging.h"
 #include "xenia/ui/qt/widgets/status_bar.h"
 
@@ -86,21 +87,6 @@ void MainWindow::OnThemeReloaded() {
 }
 
 bool MainWindow::event(QEvent* event) {
-  // method to access protected properties and methods on QWidget*
-  // https://stackoverflow.com/a/52318892
-  // we are using to access focusNextPrevChild(). This is because
-  // the public method nextInFocusChain() was returning widgets that weren't
-  // interactable, but focusNextPrevChild() behaved exactly as you'd expect for
-  // controller input.
-  using Method = bool (QWidget::*)(bool);
-  struct Helper : QWidget {
-    static Method get_focusNextPrevChild() {
-      return &Helper::focusNextPrevChild;
-    }
-  };
-  static Method const focusNextPrevChildProxy =
-      Helper::get_focusNextPrevChild();
-
   if (event->type() == HidEvent::ButtonPressType) {
     auto button_event = static_cast<ButtonPressEvent*>(event);
     bool is_repeat = button_event->is_repeat();
@@ -111,7 +97,11 @@ bool MainWindow::event(QEvent* event) {
     if (buttons & (kInputDpadDown | kInputDpadUp) && !is_repeat) {
       // invoke focusNextPrevChild via our helper
       bool forward = !!(buttons & kInputDpadDown);
-      std::invoke(focusNextPrevChildProxy, focused, forward);
+      if (forward) {
+        FocusHelper::FocusNextInteractable(focused);
+      } else {
+        FocusHelper::FocusPrevInteractable(focused);
+      }
 
       return true;
     }

@@ -9,12 +9,13 @@ namespace ui {
 namespace qt {
 
 XSideBar::XSideBar()
-    : Themeable<QToolBar>("XSideBar"), buttons_(new QButtonGroup(this)) {}
+    : Themeable<QToolBar>("XSideBar"), buttons_(new QButtonGroup(this)) {
+}
 
 XSideBarButton* XSideBar::addAction(const QString& text) {
   auto button = new XSideBarButton(text);
 
-  buttons_->addButton(button);
+  buttons_->addButton(button, index_tracker_++);
   QToolBar::addWidget(button);
 
   return button;
@@ -23,7 +24,7 @@ XSideBarButton* XSideBar::addAction(const QString& text) {
 XSideBarButton* XSideBar::addAction(QChar glyph, const QString& text) {
   auto button = new XSideBarButton(glyph, text);
 
-  buttons_->addButton(button);
+  buttons_->addButton(button, index_tracker_++);
   QToolBar::addWidget(button);
 
   return button;
@@ -36,6 +37,8 @@ QWidget* XSideBar::addSpacing(int size) {
   return spacer;
 }
 
+int XSideBar::currentSelection() const { return buttons_->checkedId(); }
+
 bool XSideBar::event(QEvent* event) {
   if (event->type() == HidEvent::ButtonPressType) {
     auto button_press_event = static_cast<ButtonPressEvent*>(event);
@@ -47,9 +50,9 @@ bool XSideBar::event(QEvent* event) {
     int direction = 0;
 
     if (button_press_event->buttons() & kInputDpadDown) {
-      direction = -1;
-    } else if (button_press_event->buttons() & kInputDpadUp) {
       direction = 1;
+    } else if (button_press_event->buttons() & kInputDpadUp) {
+      direction = -1;
     }
 
     if (direction != 0) {
@@ -70,6 +73,16 @@ bool XSideBar::event(QEvent* event) {
   }
 
   return Themeable<QToolBar>::event(event);
+}
+
+void XSideBar::focusInEvent(QFocusEvent* event) {
+  int index = currentSelection();
+  if (index > -1) {
+    auto button = buttons_->button(index);
+    if (button) {
+      button->setFocus();
+    }
+  }
 }
 
 }  // namespace qt

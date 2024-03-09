@@ -42,7 +42,6 @@ class SplitTab : public XTab {
 
  public:
   explicit SplitTab(const QString& tab_name);
-
   explicit SplitTab(const QString& tab_name, const QString& object_name);
 
  protected:
@@ -50,6 +49,9 @@ class SplitTab : public XTab {
 
   void AddSidebarItem(const SidebarItem& item);
 
+  bool event(QEvent* event) override;
+
+  const SidebarItem* GetActiveSidebarItem() const;
  private:
   QList<SidebarItem> sidebar_items_;
 
